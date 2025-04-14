@@ -10,7 +10,17 @@ import java.util.Stack;
  */
 public class Calculator {
     Map<String, Double> variables = new HashMap<>();
-
+    /**
+     * Вычисляет значение математического выражения.
+     *
+     * @param expression строка с математическим выражением
+     * @return результат вычисления
+     * @throws IllegalArgumentException если выражение содержит ошибки:
+     *                                  - неизвестные переменные/функции
+     *                                  - несбалансированные скобки
+     *                                  - деление на ноль
+     *                                  - корень из отрицательного числа
+     */
     public double evaluate(String expression) throws IllegalArgumentException {
         try {
             // Сначала заменяем все переменные
@@ -25,6 +35,13 @@ public class Calculator {
         }
     }
 
+    /**
+     * Рекурсивно вычисляет значение выражения без переменных.
+     *
+     * @param expr выражение для вычисления (без пробелов)
+     * @return результат вычисления
+     * @throws IllegalArgumentException при обнаружении ошибок в выражении
+     */
     private double evaluateExpression(String expr) {
         expr = expr.replaceAll("\\s+", "");
         Stack<Double> numbers = new Stack<>();
@@ -116,28 +133,55 @@ public class Calculator {
 
         return numbers.pop();
     }
-
+    /**
+     * Проверяет, является ли символ оператором.
+     *
+     * @param c проверяемый символ
+     * @return true если символ является оператором (+, -, *, /)
+     */
     private boolean isOperator(char c) {
         return c == '+' || c == '-' || c == '*' || c == '/';
     }
 
+    /**
+     * Определяет приоритет операторов.
+     *
+     * @param op1 первый оператор
+     * @param op2 второй оператор
+     * @return true если op1 имеет меньший или равный приоритет по сравнению с op2
+     */
     private boolean hasPrecedence(char op1, char op2) {
         if (op2 == '(' || op2 == ')') return false;
         return (op1 != '*' && op1 != '/') || (op2 != '+' && op2 != '-');
     }
 
+    /**
+     * Применяет оператор к двум операндам.
+     *
+     * @param op оператор (+, -, *, /)
+     * @param b второй операнд
+     * @param a первый операнд
+     * @return результат операции
+     * @throws IllegalArgumentException при делении на ноль или неизвестном операторе
+     */
     private double applyOp(char op, double b, double a) {
         switch (op) {
             case '+': return a + b;
             case '-': return a - b;
             case '*': return a * b;
             case '/':
-                if (b == 0) throw new ArithmeticException("Деление на ноль");
+                if (b == 0) throw new IllegalArgumentException("Деление на ноль");
                 return a / b;
             default: throw new IllegalArgumentException("Неизвестный оператор: " + op);
         }
     }
 
+    /**
+     * Добавляет переменную в калькулятор.
+     *
+     * @param name имя переменной
+     * @param value значение переменной
+     */
     public void addVariable(String name, double value) {
         variables.put(name, value);
     }
